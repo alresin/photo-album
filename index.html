@@ -5,209 +5,41 @@
 <meta charset = "utf-8">
 
 <link href="bootstrap-reboot.css" rel="stylesheet">
+<script type="text/javascript" src="nicEdit.js"></script>
 
-<style>
-
-html {
-    overflow:  hidden;
-}
-
-.cont {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    display: flex;
-    flex-flow: column;
-}
-
-.center-zone {
-    flex-grow: 3;
-    height: 80%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.image_frame {
-    display: flex;
-    justify-content: center;
-}
-
-
-#image1 {
-    height: 100%;
-    width: 97%;
-    object-fit: contain;
-}
-
-.btn-div {
-    display: flex;
-    width: 2rem;
-    align-items: center;
-}
-
-.left-btn {
-    flex-grow: 1;
-}
-
-.right-btn {
-    flex-grow: 1;
-}
-
-.text_frame {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    margin-top: 0.5%;
-}
-
-#text_input {
-    resize: none;
-    width: 98%;
-}
-
-</style>
+<link href="style.css" rel="stylesheet">
 
 <div class="cont" id="cont">
-<div class="center-zone">
-<div class="btn-div"><button class="left-btn" type="button" onclick="swipe_left()">&lt;</button></div>
-<div class="image_frame">
-    <img id = "image1" src = "image.jpg"></img>
-    <img id = "image2" src = ""></img>
-    <img id = "image3" src = ""></img>
-    <img id = "image4" src = ""></img>
+    <div class="center-zone">
+        <div class="btn-div"><button class="btn" id="left-btn" type="button" onclick="swipe_left()">&lt;</button></div>
+        <div class="page" id="page_div">
+            <div class="image_frame" id="image_frame">
+                <div class="draw_frame" id="draw_frame"></div>
+
+                <div class="areas" id="areas">
+                    <div class="area_corner" id="area0"></div>
+                    <div class="area_up" id="area1"></div>
+                    <div class="area_corner" id="area2"></div>
+                    <div class="area_left" id="area3"></div>
+                    <div class="area_center" id="area4"></div>
+                    <div class="area_left" id="area5"></div>
+                    <div class="area_corner" id="area6"></div>
+                    <div class="area_up" id="area7"></div>
+                    <div class="area_corner" id="area8"></div>
+                </div>
+
+                <div id="mask" class="mask" style="display: none"></div>
+            </div>
+        </div>
+        <div class="tools-area" id="tools-area">
+            <div class="bin-div" id="bin"></div>
+            <div class="sub-tools-area" id="sub-tools-area">
+                <div class="add-photo-and-text"><img class="add-photo-and-text-img" src="add_photo_img2.png" id="photo-sheet"></div>
+                <div class="add-photo-and-text"> <img class="add-photo-and-text-img" src="add_text_img.jpg" id="text-sheet"></div>
+            </div>
+        </div>
+        <div class="btn-div"><button class="btn" id="right-btn" type="button" onclick="swipe_right()">&gt;</button></div>
+    </div>
 </div>
-<div class="btn-div"><button class="right-btn" type="button" onclick="swipe_right()">&gt;</button></div>
-</div>
-<div class="text_frame" id = "input_space">
-    <textarea id = "text_input" type="text"></textarea>
-</div>
-<p id="page_counter">0<p>
-<button onclick="del_photo()">delete photo</button>
-</div>
 
-<script>
-
-const fs = require("fs")
-const { ipcRenderer } = require('electron')
-
-let map = {}; map[0] = emptyPage();
-let page = 0;
-
-function emptyPage() {
-    return {
-        0: '',
-        1: [],
-        empty: true
-    }
-}
-
-function dropFoo(e) {
-    e.stopPropagation();
-    e.preventDefault();
-
-    const files = e.dataTransfer.files;
-    const path = files[0].path;
-
-    readFileToBase64(path);
-}
-
-function readFileToBase64(path) {
-    let img = fs.readFileSync(path);
-    let img_b = img.toString('base64');
-
-    if (map[page][1].length <= 4) {
-    	map[page][1].push(img_b);
-    }
-
-    reload(page)	
-}
-
-function Atob(a) {
-    return Buffer.from(a, 'base64').toString('binary')
-}
-
-function getBlobFromBase64(base64) {
-    const binaryText = Atob(base64);
-
-    const codes = []
-    for (let i = 0; i < binaryText.length; i++) {
-        codes.push(binaryText.charCodeAt(i))
-    }
-
-    const byteArray = new Uint8Array(codes)
-    return new Blob([byteArray])
-}
-
-function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy';
-  }
-
-function swipe_left() {
-    if (page > 0) {
-        page -= 1;
-        reload(page + 1); 
-    }
-}
-
-function swipe_right() {
-    if (map[page + 1] !== undefined || map[page].empty !== true) {
-    	page += 1;
-    	reload(page - 1);
-    }
-}
-
-function reload(last_page) {
-    document.getElementById('page_counter').innerHTML = page;
-    if (map[last_page] === undefined) {
-    	map[last_page] = emptyPage();
-    }
-
-    map[last_page][0] =  document.getElementById('text_input').value.trim();
-    
-    if (map[page] === undefined) {
-        map[page] = emptyPage();
-    }
-    document.getElementById('text_input').value = map[page][0];
-
-    const im = document.getElementById('image1')
-    if (map[page] !== undefined && map[page][1][0] !== undefined) {
-        im.src = URL.createObjectURL(getBlobFromBase64(map[page][1][0]));
-        im.style = ''
-    }else{
-        im.src = '';
-        im.style = 'display:none'
-    }
-
-    if (map[page][0] === '' && map[page][1].length == 0) {
-        map[page].empty = true;
-    } else {
-        map[page].empty = false;
-    }
-}
-
-function del_photo() {
-	map[page][1] = [];
-	reload(page);	
-}
-
-DEBUG = { exceptions: [] }
-window.onload = () => {
-	const dropZone = document.getElementById('cont');
-	dropZone.addEventListener('dragover', handleDragOver, false);
-	dropZone.addEventListener('drop', dropFoo, false);
-
-	ipcRenderer.on('main_channel', (event, message) => {
-		ipcRenderer.send('main_channel', map)
-	})
-	ipcRenderer.on('debug', (event, message) => {
-		DEBUG[message.varname] = message.data
-	})
-	ipcRenderer.on('open_map', (event, message) => {
-		map = message;
-        reload(page);
-	})
-}
-
-</script>
+<script src="script.js"></script>

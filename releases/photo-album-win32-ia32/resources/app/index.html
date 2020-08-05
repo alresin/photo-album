@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<title>Фотоальбом</title>
+
+<meta charset = "utf-8">
+
+<link href="bootstrap-reboot.css" rel="stylesheet">
+<script type="text/javascript" src="nicEdit.js"></script>
+
+<link href="style.css" rel="stylesheet">
+
+<div class="cont" id="cont">
+    <div class="center-zone">
+        <div class="btn-div"><button class="btn" id="left-btn" type="button" onclick="swipe_left()">&lt;</button></div>
+        <div class="page" id="page_div">
+            <div class="image_frame" id="image_frame">
+                <div class="draw_frame" id="draw_frame"></div>
+
+                <div class="areas" id="areas">
+                    <div class="area_corner" id="area0"></div>
+                    <div class="area_up" id="area1"></div>
+                    <div class="area_corner" id="area2"></div>
+                    <div class="area_left" id="area3"></div>
+                    <div class="area_center" id="area4"></div>
+                    <div class="area_left" id="area5"></div>
+                    <div class="area_corner" id="area6"></div>
+                    <div class="area_up" id="area7"></div>
+                    <div class="area_corner" id="area8"></div>
+                </div>
+
+                <div id="mask" class="mask" style="display: none"></div>
+            </div>
+        </div>
+        <div class="tools-area" id="tools-area">
+            <div class="bin-div" id="bin"></div>
+            <div class="sub-tools-area" id="sub-tools-area">
+                <div class="add-photo-and-text"><img class="add-photo-and-text-img" src="add_photo_img2.png" id="photo-sheet"></div>
+                <div class="add-photo-and-text"> <img class="add-photo-and-text-img" src="add_text_img.jpg" id="text-sheet"></div>
+            </div>
+        </div>
+        <div class="btn-div"><button class="btn" id="right-btn" type="button" onclick="swipe_right()">&gt;</button></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
