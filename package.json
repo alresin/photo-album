@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^4.0.2",
+    "electron": "^7.2.4",
     "electron-winstaller": "^2.7.0"
   },
   "dependencies": {
